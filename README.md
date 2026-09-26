@@ -22,26 +22,30 @@
 
 ## ⚡ Architecture
 
-```
-  ┌────────────────────────┐
-  │ Autonomous AI Agent    │
-  │ (Claude / Cursor / VLA)│
-  └───────────┬────────────┘
-              │ JSON-RPC: tools/call
-              ▼
-  ┌─────────────────────────────────────────────────────────┐
-  │         A2Z Enterprise MCP Firewall Gateway             │
-  │                                                         │
-  │  [1] PromptInjectionGuard (OWASP LLM01 Semantic Shield) │
-  │  [2] ToolGovernor (RBAC Whitelist & SQL/Bash Sanitizer) │
-  │  [3] TrustSwarmStreamer (Cryptographic Audit Signatures)│
-  └───────────┬─────────────────────────────────────────────┘
-              │
-      ┌───────┴───────┐
-      ▼               ▼
-[ ALLOW ]         [ BLOCK ]
-Forward to MCP    Return JSON-RPC Error (-32001 to -32003)
-Server & Tool     Stream Violation to A2Z Trust Swarm Console
+```mermaid
+flowchart TD
+    subgraph AgentClient["Agent Clients (Frontier Swarms)"]
+        Agent["Autonomous AI Agent\n(Claude Opus 5.5 / GPT-6 Astra / Cursor)"]
+        Request["JSON-RPC Tool Call Request: 'tools/call'"]
+        Agent --> Request
+    end
+
+    subgraph MCPFirewall["A2Z Enterprise Zero-Trust MCP Firewall"]
+        Guard["PromptInjectionGuard\n(Semantic Vector Defense & OWASP LLM01)"]
+        Governor["ToolGovernor\n(RBAC Whitelist & Destructive SQL/Bash Sanitizer)"]
+        Streamer["TrustSwarmStreamer\n(HMAC-SHA256 Cryptographic Audit Signatures)"]
+        
+        Request --> Guard
+        Guard --> Governor
+        Governor --> Streamer
+    end
+
+    subgraph EnforcementAction["Enforcement & Dispatch Decision"]
+        Decision{Inspection Verdict}
+        Streamer --> Decision
+        Decision -->|ALLOW| TargetMCP["Target MCP Tool Server\n(e.g., SQLite, GitHub, Filesystem)"]
+        Decision -->|BLOCK| Rejection["JSON-RPC Error (-32001 to -32003)\nAlert Streamed to A2Z SOC Trust Console"]
+    end
 ```
 
 ---
