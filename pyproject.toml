@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "a2z-mcp-firewall"
+version = "0.1.0"
+authors = [
+  { name="Ahmed Hassan", email="contact@a2zsoc.com" },
+]
+description = "Enterprise Model Context Protocol (MCP) Security Gateway & Indirect Prompt Injection Guard"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.scripts]
+mcp-firewall = "projects.enterprise_mcp_firewall.run_proxy:main"
